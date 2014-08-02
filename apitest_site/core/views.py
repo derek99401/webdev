@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django.http import HttpResponse
-from rest_framework.parsers import FileUploadParser
+from rest_framework.parsers import FileUploadParser,FormParser
 from rest_framework.views import APIView
-import hashlib, os
+import hashlib, os, logging
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 class TestView(View):
@@ -12,31 +14,47 @@ class TestView(View):
     return HttpResponse('hello world')
 
 class FileUploadView(APIView):
-  parser_classes = (FileUploadParser,)
+  tmpdir = '/tmp'
+  parser_classes = (FileUploadParser,FormParser)
 
   def post(self, request):
     file_obj = request.FILES['file']
-    if not verify_params(self, request):
-      return HttpResponse(content = 'bad request', status = 400)
-    upload_file(file_obj, filename = request.POST['filename'], placement_name = request.POST['id'], md5 = request.POST['md5'])
-    return HttpResponse(content = 'OK', status = 200)
+    params = request.QUERY_PARAMS
 
-  def verify_params(self, request):
-    if 'id' not in request.POST:
+    if not self.verify_params(params):
+      return HttpResponse(content = 'bad request', status = 400)
+    filepath = os.path.join(self.__class__.tmpdir,params['filename'])
+    success = True
+    if upload_file(file_obj, filepath, placement_name = params['id'], md5 = params['md5']):
+      #success
+      logger.info('Successfully received file %s' % request.FILES['file'])
+    else:
+      #failed
+      success = False
+      logger.info('Fail to receive file %s' % request.FILES['file'])
+    if os.path.exists(filepath):
+      os.remove(filepath)
+    if success:
+      return HttpResponse(content = 'OK', status = 200)
+    else:
+      return HttpResponse(content = 'FAILED', status = 409)
+
+  def verify_params(self, params):
+    if 'id' not in params:
       return False
-    if 'md5' not in request.POST:
+    if 'md5' not in params:
       return False
-    if 'filename' not in request.POST:
+    if 'filename' not in params:
       return False
     return True
 
-def upload_file(file_obj, filename = None, placement_name = None, md5 = None):
+def upload_file(file_obj, filepath, placement_name = None, md5 = None):
   md5_hasher = hashlib.md5()
-  with open(os.path.join('/tmp/',filename), 'wb+') as dest_file:
+  with open(filepath, 'wb+') as dest_file:
     for chunk in file_obj.chunks():
       dest_file.write(chunk)
       md5_hasher.update(chunk)
-  if md5_hasher.hexdigest != md5:
+  if md5_hasher.hexdigest() != md5:
     return False
 
   return True
