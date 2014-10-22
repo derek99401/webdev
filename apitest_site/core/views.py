@@ -14,7 +14,7 @@ class TestView(View):
     return HttpResponse('hello world')
 
 class FileUploadView(APIView):
-  tmpdir = '/tmp'
+  tmpdir = os.path.expanduser('~/tmp')
   parser_classes = (FileUploadParser,FormParser)
 
   def post(self, request):
@@ -32,8 +32,8 @@ class FileUploadView(APIView):
       #failed
       success = False
       logger.info('Fail to receive file %s' % request.FILES['file'])
-    if os.path.exists(filepath):
-      os.remove(filepath)
+    #if os.path.exists(filepath):
+    #  os.remove(filepath)
     if success:
       return HttpResponse(content = 'OK', status = 200)
     else:
@@ -54,6 +54,7 @@ def upload_file(file_obj, filepath, placement_name = None, md5 = None):
     for chunk in file_obj.chunks():
       dest_file.write(chunk)
       md5_hasher.update(chunk)
+  logger.info('save received file to to %s' % filepath)
   if md5_hasher.hexdigest() != md5:
     return False
 

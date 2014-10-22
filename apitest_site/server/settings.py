@@ -48,9 +48,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'apitest_site.urls'
+ROOT_URLCONF = 'server.urls'
 
-WSGI_APPLICATION = 'apitest_site.wsgi.application'
+WSGI_APPLICATION = 'server.wsgi.application'
 
 
 # Database
