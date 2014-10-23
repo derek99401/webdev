@@ -1,0 +1,33 @@
+############################
+# essential packages
+############################
+
+- name: Install essential packages from deb
+  apt: name={{item}} update_cache=yes
+  sudo: yes
+  with_items:
+    - vim
+    - git
+    - build-essential
+    - clang
+    - python-dev
+    - python-pip
+    - python-setuptools
+    - pkg-config
+
+- name: Install mysql
+  apt: name={{item}}
+  sudo: yes
+  with_items:
+    - libmysqlclient-dev
+    - mysql-server
+    - mysql-client
+
+- name: Install dev packages from deb
+  apt: name={{item}}
+  sudo: yes
+  with_items:
+    - cmake
+    - cmake-curses-gui
+    - libssl-dev
+    - libjsoncpp-dev

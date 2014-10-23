@@ -1,0 +1,5 @@
+---
+  - include: essentials.yml
+  - include: python.yml
+
+  - copy: src=vimrc dest=~/.vimrc

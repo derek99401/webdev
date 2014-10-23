@@ -1,0 +1,19 @@
+syntax on
+set expandtab softtabstop=2 ts=2 sw=2
+set wildignore=*.class,*.o,*.a,*.exe,*.dat,*.clb,*.doc
+set lcs=tab:-~,trail:+
+set list
+"set nosmartindent
+set autoindent
+"set cindent
+:inoremap # <C-v>#
+"inoremap { {<CR>}<up><end><CR>
+map! p ^yf(o:wpa
+"set errorformat=%A%f:%l\\\ %m
+"set makeprg=make
+highlight Comment ctermfg=blue
+highlight Underlined ctermfg=green
+augroup filetype
+  au!
+  au! BufRead,BufNewFile COMMIT_EDITMSG set filetype=text
+augroup END

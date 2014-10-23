@@ -1,0 +1,44 @@
+############################
+# Pyton
+############################
+- name: install virtualenv
+  sudo: yes
+  pip: name=virtualenv
+
+- name: install mysql-python
+  pip: name=mysql-python virtualenv=~/ENV
+
+- name: Install dependencies for scipy
+  sudo: yes
+  apt: name={{item}}
+  with_items:
+    - libatlas-base-dev
+    - gfortran
+
+- name: Install sympy nose six and patsy
+  pip: name={{item}} virtualenv=~/ENV
+  with_items:
+    - sympy
+    - nose
+    - six
+    - patsy
+
+- name: Install numpy and scipy
+  pip: name={{item}} virtualenv=~/ENV
+  with_items:
+    - tornado
+    - pyparsing
+
+- name: Install matplotlib
+  sudo: yes
+  apt: name=matplotlib
+
+- name: Install ipython
+  pip: name={{item}} virtualenv=~/ENV
+  with_items:
+    - ipython
+    - ipython[all]
+
+- name: Install pandas
+  pip: name=pandas virtualenv=~/ENV
+    - pandas

@@ -1,0 +1,6 @@
+# This playbook deploys the baysensors core environment (shared by prod and dev)
+
+- name: Apply roles
+  hosts: all
+  roles:
+   - common
